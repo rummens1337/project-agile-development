@@ -12,11 +12,9 @@ byte sensorPin       = 2;
 byte inputPin        = 1;
 
 // The hall-effect flow sensor outputs approximately 4.5 pulses per second per Litre/Minute of flow.
-// **Michel** The waterflow sensor has different pulseCounts at different waterflow speeds, therefore making it inaccurate.
-// Also, i find a calibrationFactor of 7.2 to be fairly accurate when beer flows trough.
+// But.. The waterflow sensor has different pulseCounts at different waterflow speeds, therefore making it inaccurate.
+// I found a calibrationFactor of 7.2 to be fairly accurate when beer flows trough.
 
-// An option (to fix this somewhat) would be to count average of waterflow / minute
-// opposed to actual waterflow / minute, and create a better factor.
 float calibrationFactor = 7.2;
 
 volatile byte pulseCount;
@@ -24,20 +22,19 @@ float flowRate;
 unsigned int flowMilliLitres;
 unsigned long totalMilliLitres;
 unsigned long oldTime;
-
-/**
-   Declaration of cummunication pin
-*/
-byte communicationPin = 15;
-
 unsigned long kegBeer;
 unsigned long actualKegML;
+
+/**
+   Declaration of cummunication pin.
+*/
+byte communicationPin = 15;
 
 void setup()
 {
   Serial.begin(9600);
   /**
-     Setup of flowsensor
+     Setup of flowsensor.
   */
   pinMode(sensorPin, INPUT);
   digitalWrite(sensorPin, HIGH);
@@ -105,22 +102,24 @@ void loop()
     actualKegML = (kegBeer - totalMilliLitres);
     unsigned long printDL = (actualKegML / 10);
     sevseg.setNumber(printDL, 2);
-    
-    if (actualKegML < (kegBeer/100*99.6))
+
+    if (actualKegML < (kegBeer / 100 * 99.6))
     {
       analogWrite(communicationPin, 255);
     }
-
+    
     // Prints acutal ML in keg to serial port @ bound rate 9600
     Serial.println(actualKegML);
-    
+
     // Reset the pulse counter so we can start incrementing again
     pulseCount = 0;
 
     // Enable the interrupt again now that we've finished calculating output
     attachInterrupt(sensorInterrupt, pulseCounter_ISR, FALLING);
   }
+  
   sevseg.refreshDisplay(); // Must run repeatedly
+  
 }
 
 /*
