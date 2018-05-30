@@ -10,31 +10,31 @@ import FlowSensor
 
     
 def main():
-    # initialize threads
+    # Initialize threads
     reader = Nfc.Read()
     hx711 = Weigh.Scale()
     beer_o_meter = FlowSensor.Measure()
-    #pin1 = Test.InputPin("12")
     
-    # start threads. these now run seperately.
+    # Start threads. These now run seperately.
     reader.start()
     hx711.start()
     beer_o_meter.start()
-    #pin1.start()
     
     while True:
         try:
-            time.sleep(2)
-            print("Main program still running...")
+            time.sleep(10)
+            print("Driver.py still running...")
             
         except(KeyboardInterrupt, SystemExit):
             hx711.cleanAndExit()
             reader.cleanAndExit()
+            beer_o_meter.cleanAndExit()
         
     # Join threads to make Driver.py run till reader and hx711 complete.
     # Which should'nt be till keyboardinterrupt or system exit though :)
     reader.join()
     hx711.join()
+    beer_o_meter.join()
     
 if __name__ == "__main__":
     main()
