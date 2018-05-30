@@ -1,54 +1,47 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
-#
-#    Copyright 2014,2018 Mario Gomez <mario.gomez@teubi.co>
-#
-#    This file is part of MFRC522-Python
-#    MFRC522-Python is a simple Python implementation for
-#    the MFRC522 NFC Card Reader for the Raspberry Pi.
-#
-#    MFRC522-Python is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Lesser General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
-#
-#    MFRC522-Python is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Lesser General Public License for more details.
-#
-#    You should have received a copy of the GNU Lesser General Public License
-#    along with MFRC522-Python.  If not, see <http://www.gnu.org/licenses/>.
 
 import RPi.GPIO as GPIO
 import MFRC522
 import signal
 import threading
 import time
+import requests
+
 class Read(threading.Thread):
     GPIO.setwarnings(False)
+    
     def run(self):
-
+        print ("Nfc.py = Enabled")
         continue_reading = True
-
-        # When 
+        MIFAREReader = MFRC522.MFRC522()
+        
         def cleanAndExit(self):
             global continue_reading
             print ("Ctrl+C captured, ending read.")
             continue_reading = False
             GPIO.cleanup()
             sys.exit()
-
-        # Create an object of the class MFRC522
-        MIFAREReader = MFRC522.MFRC522()
-
-        # Welcome message
-        print ("Welcome to the MFRC522 data read example")
-        print ("Press Ctrl-C to stop.")
-
+        
+        def arrayToString(self,array):
+            return ''.join(str(e) for e in array)
+        
+        def checkCard(card):
+            if (card == "12312436217250"):
+                print("Sending NFC data to mendix.. Data = Enable login for user Rummens#5123")
+                
+##                    headers = {'Content-Type': 'application/json'}
+##                    URL = 'https://2018et08publisheds.mxapps.io/rest/Published_REST_service/Beer'
+##                    payload = "{\n\t\"Beer\": " + str(gram) + "}"
+##                    
+##                    response = requests.request("PUT", URL, data=payload, headers=headers)
+##                    print(response)
+                
         # This loop keeps checking for chips. If one is near it will get the UID and authenticate
         while continue_reading:
+            #keeps cpu usage low
             time.sleep(0.5)
+            
             # Scan for cards    
             (status,TagType) = MIFAREReader.MFRC522_Request(MIFAREReader.PICC_REQIDL)
 
@@ -61,23 +54,7 @@ class Read(threading.Thread):
 
             # If we have the UID, continue
             if status == MIFAREReader.MI_OK:
-
-                # Print UID
-                print ("Card read UID: %s,%s,%s,%s" % (uid[0], uid[1], uid[2], uid[3]))
-    
-                # This is the default key for authentication
-                key = [0xFF,0xFF,0xFF,0xFF,0xFF,0xFF]
-        
-                # Select the scanned tag
-                MIFAREReader.MFRC522_SelectTag(uid)
-
-                # Authenticate
-                status = MIFAREReader.MFRC522_Auth(MIFAREReader.PICC_AUTHENT1A, 8, key, uid)
-
-                # Check if authenticated
-                if status == MIFAREReader.MI_OK:
-                    MIFAREReader.MFRC522_Read(8)
-                    MIFAREReader.MFRC522_StopCrypto1()
-                else:
-                    print ("Authentication error")
-
+                card = arrayToString(self,uid)
+                checkCard(card)
+                
+                
